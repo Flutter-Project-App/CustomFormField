@@ -1,4 +1,6 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import '../../pages/signupForm.dart';
 
 class SwitchFormField extends FormField<bool> {
   SwitchFormField({
@@ -14,7 +16,10 @@ class SwitchFormField extends FormField<bool> {
     Color? activeTrackColor,
     Color? inactiveThumbColor,
     Color? inactiveTrackColor,
+    // ImageProvider<dynamic>? activeThumbImage,
+    // ImageProvider<dynamic>? inactiveThumbImage,
     MaterialTapTargetSize? materialTapTargetSize,
+    DragStartBehavior dragStartBehavior = DragStartBehavior.start,
     Color? focusColor,
     Color? hoverColor,
     FocusNode? focusNode,
@@ -23,47 +28,52 @@ class SwitchFormField extends FormField<bool> {
         assert(initialValue != null),
         assert(autovalidate != null),
         assert(autofocus != null),
+        assert(dragStartBehavior != null),
         assert(constraints != null),
         super(
-            key: key,
-            onSaved: onSaved,
-            initialValue: initialValue,
-            validator: validator,
-            autovalidate: autovalidate,
-            builder: (FormFieldState<bool> field) {
-              final InputDecoration effectiveDecoration = decoration
-                  .applyDefaults(Theme.of(field.context).inputDecorationTheme);
-              return InputDecorator(
-                decoration:
-                    effectiveDecoration.copyWith(errorText: field.errorText),
-                isEmpty: field.value == null,
-                isFocused: focusNode!.hasFocus,
-                child: Row(
-                  children: <Widget>[
-                    ConstrainedBox(
-                      constraints: constraints,
-                      child: Switch(
-                        value: field.value!,
-                        onChanged: field.didChange,
-                        activeColor: activeColor,
-                        inactiveThumbColor: inactiveThumbColor,
-                        inactiveTrackColor: inactiveTrackColor,
-                        activeTrackColor: activeTrackColor,
-                        materialTapTargetSize: materialTapTargetSize,
-                        focusColor: focusColor,
-                        hoverColor: hoverColor,
-                        focusNode: focusNode,
-                        autofocus: autofocus,
-                      ),
-                    )
-                  ],
+        key: key,
+        onSaved: onSaved,
+        initialValue: initialValue,
+        validator: validator,
+        autovalidate: autovalidate,
+        builder: (FormFieldState<bool>? field) {
+          final InputDecoration effectiveDecoration = decoration!.applyDefaults(
+            Theme.of(field!.context).inputDecorationTheme,
+          );
+          return InputDecorator(
+            decoration: effectiveDecoration.copyWith(errorText: field.errorText),
+            isEmpty: field.value == null,
+            isFocused: focusNode!.hasFocus,
+            child: Row(
+              children: <Widget>[
+                ConstrainedBox(
+                  constraints: constraints!,
+                  child: Switch(
+                    value: field.value!,
+                    onChanged: field.didChange,
+                    activeColor: activeColor,
+                    activeTrackColor: activeTrackColor,
+                    inactiveThumbColor: inactiveThumbColor,
+                    inactiveTrackColor: inactiveTrackColor,
+                    // activeThumbImage: activeThumbImage,
+                    // inactiveThumbImage: inactiveThumbImage,
+                    materialTapTargetSize: materialTapTargetSize,
+                    dragStartBehavior: dragStartBehavior,
+                    focusColor: focusColor,
+                    hoverColor: hoverColor,
+                    focusNode: focusNode,
+                    autofocus: autofocus,
+                  ),
                 ),
-              );
-            });
+              ],
+            ),
+          );
+        },
+      );
 
   final ValueChanged<bool>? onChanged;
-  final InputDecoration decoration;
-  final BoxConstraints constraints;
+  final InputDecoration? decoration;
+  final BoxConstraints? constraints;
 
   @override
   FormFieldState<bool> createState() => _SwitchFormFieldState();
@@ -71,11 +81,15 @@ class SwitchFormField extends FormField<bool> {
 
 class _SwitchFormFieldState extends FormFieldState<bool> {
   @override
-  SwitchFormField get widget => widget;
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+  @override
+  SwitchFormField get widget => super.widget as SwitchFormField;
 
   @override
   void didChange(bool? value) {
-    // TODO: implement didChange
     super.didChange(value);
     if (this.hasError) {
       this.validate();

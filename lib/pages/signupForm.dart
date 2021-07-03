@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_application/widgets/formFields/switchFormField.dart';
+import 'package:flutter_application/widgets/formFields/toggleButtonFormField.dart';
 
 enum Gender { Male, Female, Other }
 
@@ -62,6 +64,12 @@ class _SignupFormState extends State<SignupForm> {
   final ethicsAgreementFocusNode = FocusNode();
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -76,7 +84,75 @@ class _SignupFormState extends State<SignupForm> {
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             children: <Widget>[
-
+              TextFormField(
+                decoration: InputDecoration(
+                    hintText: "Enter your name", labelText: "Name"),
+                inputFormatters: [LengthLimitingTextInputFormatter(30)],
+                initialValue: _formResult.name,
+                validator: (userName) {
+                  if (userName!.isEmpty) {
+                    return "Name is required";
+                  }
+                  if (userName.length < 3) {
+                    return "Name is too short";
+                  }
+                  return null;
+                },
+                onSaved: (userName) {
+                  _formResult.name = userName;
+                },
+                focusNode: nameFocusNode,
+                textInputAction: TextInputAction.next,
+                onTap: () {
+                  FocusScope.of(context).unfocus();
+                  FocusScope.of(context).requestFocus(nameFocusNode);
+                },
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
+              ToggleButtonFormField(
+                decoration: InputDecoration(labelText: "Gender"),
+                initialValue: _formResult.gender,
+                items: Gender.values,
+                itemBuilder: (BuildContext context, Gender genderItem) =>
+                    Text(describeEnum(genderItem)),
+                selectedItemBuilder:
+                    (BuildContext context, Gender genderItem) =>
+                        Text(describeEnum(genderItem), style: TextStyle(fontWeight: FontWeight.bold),),
+                validator: (gender) =>
+                    gender == null ? "Gender is required" : null,
+                onSaved: (Gender? gender) {
+                  _formResult.gender = gender;
+                },
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                focusNodes: genderFocusNodes,
+                onChanged: (gender) {
+                  final genderIndex = Gender.values.indexOf(gender as Gender);
+                  if (genderIndex >= 0) {
+                    FocusScope.of(context).unfocus();
+                    FocusScope.of(context).requestFocus(genderFocusNodes[genderIndex]);
+                  }
+                },
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
+              SwitchFormField(
+                decoration: InputDecoration(
+                    labelText: "Ethics agreement", hintText: null),
+                focusNode: ethicsAgreementFocusNode,
+                initialValue: _formResult.ethicsAgreement,
+                validator: (agree) =>
+                    agree == false ? "Please agree with ethics" : null,
+                onSaved: (agree) {
+                  _formResult.ethicsAgreement = agree;
+                },
+                onChanged: (_) {
+                  FocusScope.of(context).unfocus();
+                  FocusScope.of(context).requestFocus(ethicsAgreementFocusNode);
+                },
+              )
             ],
           ),
         ),
@@ -84,7 +160,10 @@ class _SignupFormState extends State<SignupForm> {
       floatingActionButton: FloatingActionButton(
         onPressed: _submitForm,
         tooltip: 'Save',
-        child: Icon(Icons.save, size: 36.0,),
+        child: Icon(
+          Icons.save,
+          size: 36.0,
+        ),
       ),
     );
   }
@@ -98,42 +177,3 @@ class _SignupFormState extends State<SignupForm> {
     }
   }
 }
-
-// class TextFormField extends FormField<String> {
-// //   TextFormField({
-// //     Key key,
-// //     this.controller,
-// //     FocusNode focusNode,
-// //     Input
-// //
-// // })
-//   TextFormField({this.controller,
-//   Key? key,
-//   InputDecoration decoration = const InputDecoration(),
-//       ValueChanged<String> onChanged,) : super(key: key, builder: (FormFieldState<String> field) {
-//   final _TextFormFieldState state = field;
-//   final InputDecoration effectiveDecoration = (decoration ?? const InputDecoration())
-//       .applyDefaults(Theme.of(field.context).inputDecorationTheme);
-//   void onChangedHandler(String value) {
-//     if (onChanged != null) {
-//       onChanged(value);
-//     }
-//     if (field.hasError) {
-//       field.validate();
-//     }
-//     field.didChange(value);
-//   }
-//   return TextField(
-//
-//   );
-//   }});
-//
-//   final TextEditingController controller;
-//
-//   @override
-//   _TextFormFieldState createState() => _TextFormFieldState();
-// }
-//
-// class _TextFormFieldState extends FormFieldState<String> {
-//
-// }
