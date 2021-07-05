@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_application/widgets/formFields/MultiSelectionFormField.dart';
+import 'package:flutter_application/widgets/formFields/dateFormField.dart';
 import 'package:flutter_application/widgets/formFields/switchFormField.dart';
 import 'package:flutter_application/widgets/formFields/toggleButtonFormField.dart';
 
@@ -133,6 +135,73 @@ class _SignupFormState extends State<SignupForm> {
                     FocusScope.of(context).unfocus();
                     FocusScope.of(context).requestFocus(genderFocusNodes[genderIndex]);
                   }
+                },
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
+              DateFormField(
+                decoration: InputDecoration(
+                  labelText: "Birthdate"
+                ),
+                validator: (birthdate) {
+                  if (birthdate == null) {
+                    return "A valid birthdate is required";
+                  }
+                  final now = DateTime.now();
+                  if (birthdate.isAfter(now)) {
+                    return "You are not born yet!";
+                  }
+                  const MAX_AGE = 99;
+                  if (birthdate.isBefore(now.subtract(Duration(days: 365 * MAX_AGE)))) {
+                    return "Select a more recent date";
+                  }
+                  const MIN_AGE = 18;
+                  if (birthdate.isAfter(now.subtract(Duration(days: 365 * MIN_AGE)))) {
+                    return "Only adults are allowed";
+                  }
+                  return null;
+                },
+                onSaved: (birthdate) {
+                  _formResult.birthdate = birthdate;
+                },
+                dayFocusNode: birthdateFocusNodes[0],
+                dayOnTap: () {
+                  FocusScope.of(context).unfocus();
+                  FocusScope.of(context).requestFocus(birthdateFocusNodes[0]);
+                },
+                monthFocusNode: birthdateFocusNodes[1],
+                monthOnTap: () {
+                  FocusScope.of(context).unfocus();
+                  FocusScope.of(context).requestFocus(birthdateFocusNodes[1]);
+                },
+                yearFocusNode: birthdateFocusNodes[2],
+                yearOnTap: () {
+                  FocusScope.of(context).unfocus();
+                  FocusScope.of(context).requestFocus(birthdateFocusNodes[2]);
+                },
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
+              MultiSelectionFormField(
+                decoration: InputDecoration(
+                  labelText: "Interests"
+                ),
+                hint: Text('Select more interests'),
+                isDense: true,
+                focusNode: interestsFocusNode,
+                options: Interest.values,
+                titleBuilder: (interest) => Text(describeEnum(interest!)),
+                chipLabelBuilder: (interest) => Text(describeEnum(interest!)),
+                initialValues: _formResult.interests,
+                validator: (interests) => interests!.length < 3 ? "Please select at least 3 interests" : null,
+                onSaved: (interests) {
+                  _formResult.interests = interests as List<Interest>;
+                },
+                onChanged: (_) {
+                  FocusScope.of(context).unfocus();
+                  FocusScope.of(context).requestFocus(interestsFocusNode);
                 },
               ),
               SizedBox(
